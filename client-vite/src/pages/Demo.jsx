@@ -1,8 +1,6 @@
 import React from 'react';
 import {Button, Container, Row, Col} from "react-bootstrap";
-import CreateBrand from "../components/modals/CreateBrand"
-import CreateType from "../components/modals/CreateType";
-import CreateDevice from "../components/modals/CreateDevice";
+import glassFilter from '../filter/glass';
 
 const Demo = () => {
     /** @type {React.MutableRefObject<HTMLCanvasElement>} */
@@ -13,24 +11,40 @@ const Demo = () => {
     
 
     React.useLayoutEffect(() => {
+        const canvas = canvasRef.current;
+        const video  = videoRef.current;
+        // const video = document.createElement("video");
+
+
+        function render() {
+            requestAnimationFrame(render);
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            if (canvas.width == 0) return;
+
+            const ctx    = canvas.getContext('2d');
+            ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+            glassFilter(canvas);
+        }
+
         navigator.mediaDevices.getUserMedia({
             audio: false,
             video: true
-        }).then((stream) => {
-            videoRef.current.srcObject = stream;
+        }).then((stream) => { 
+
+            // const canvas = document.createElement("canvas");
+    
+    
+            video.srcObject = stream;
+
+            requestAnimationFrame(render);
         })
     }, []);
 
     function handle() {
-        const canvas = canvasRef.current;
-        const ctx    = canvas.getContext('2d');
-
-        const video  = videoRef.current;
-
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     }
 
     return (
